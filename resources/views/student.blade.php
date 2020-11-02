@@ -41,6 +41,7 @@
                         <td>{{ $stu->department }}</td>
                         <td>
                           <a href="javascript:void(0)" onclick="editStudent({{$stu->id}})" class="btn btn-info">Edit</a>
+                          <a href="javascript:void(0)" onclick="deleteStudent({{$stu->id}})" class="btn btn-danger">Delete</a>
                         </td>
                       </tr>
                       @endforeach
@@ -214,5 +215,28 @@
         });
     });
 </script>
+
+<script>
+    function deleteStudent(id)
+    {
+
+        if(confirm("Do you really want to delete this record?"))
+        {
+            var _token = $("input[name=_token]").val();
+            $.ajax({
+                url:'/students/'+id,
+                type:'DELETE',
+                data:{
+                  _token:_token
+                },
+                success:function(response)
+                {
+                   $("#sid"+id).remove();
+                }
+            });
+        }
+    }
+</script>
+
 </body>
 </html>
