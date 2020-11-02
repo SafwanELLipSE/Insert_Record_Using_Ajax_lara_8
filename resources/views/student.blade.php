@@ -17,12 +17,15 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                Students <a href="" class="btn btn-success float-right" data-toggle="modal" data-target="#StudentModal">Add New Student</a>
+                Students
+                <a href="" class="btn btn-success float-right" data-toggle="modal" data-target="#StudentModal">Add New Student</a>
+                <a href="#" class="btn btn-danger float-right mr-1" id="deleteAllSelectedRecord">Delete Selected</a>
               </div>
               <div class="card-body">
                 <table id="studentTable" class="table">
                   <thead>
                     <tr>
+                      <th><input type="checkbox" id="chkCheckAll"/></th>
                       <th>ID</th>
                       <th>Name</th>
                       <th>Email</th>
@@ -34,6 +37,7 @@
                   <tbody>
                       @foreach($students as $stu)
                       <tr id="sid{{$stu->id}}">
+                        <td><input type="checkbox" name="ids" class="checkBoxClass" value="{{$stu->id}}"/></td>
                         <td>{{ $stu->id }}</td>
                         <td>{{ $stu->name }}</td>
                         <td>{{ $stu->email }}</td>
@@ -158,7 +162,7 @@
             {
               if(response)
               {
-                // $("#studentTable tbody").prepend('<tr><td>'+ response.name +'</td><td>'+ response.email +'</td><td>'+ response.phone + '</td><td>'+ response.department +'</td></tr>');
+                $("#studentTable tbody").prepend('<tr><td>'+ response.name +'</td><td>'+ response.email +'</td><td>'+ response.phone + '</td><td>'+ response.department +'</td></tr>');
                 $("#studentForm")[0].reset();
                 $("#StudentModal").modal('hide');
               }
@@ -237,6 +241,39 @@
         }
     }
 </script>
+<script>
+    $(function(e){
 
+      $("#chkCheckAll").click(function(){
+        $(".checkBoxClass").prop('checked',$(this).prop('checked'))
+      })
+
+      $("#deleteAllSelectedRecord").click(function(e){
+          e.preventDefault();
+
+          var allids = [];
+
+          $("input:checkbox[name=ids]:checked").each(function(){
+              allids.push($(this).val());
+          });
+
+          $.ajax({
+            url:"{{route('student.deleteSelected')}}",
+            type:'DELETE',
+            data:{
+              _token:$("input[name=_token]").val(),
+              ids:allids
+            },
+            success:function(response)
+            {
+               $.each(allids,function(key,val){
+                 $("#ids"+val).remove();
+               })
+            }
+          });
+      })
+
+    });
+</script>
 </body>
 </html>
